@@ -1,7 +1,8 @@
 import { IconSettings } from "@tabler/icons-react";
 import cn from "classnames";
 import EasyModal, { type InnerModalProps } from "ez-modal-react";
-import { Field, Form, Formik } from "formik";
+import { Field, Form } from "formik";
+import { FormModal } from "src/components/Form";
 import { type ReactNode, useState } from "react";
 import { Alert } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
@@ -55,7 +56,7 @@ const RedirectionHostModal = EasyModal.create(({ id, visible, remove }: Props) =
 	};
 
 	return (
-		<Modal show={visible} onHide={remove}>
+		<>
 			{!isLoading && error && (
 				<Alert variant="danger" className="m-3">
 					{error?.message || "Unknown error"}
@@ -63,7 +64,9 @@ const RedirectionHostModal = EasyModal.create(({ id, visible, remove }: Props) =
 			)}
 			{isLoading && <Loading noLogo />}
 			{!isLoading && data && (
-				<Formik
+				<FormModal
+					show={visible}
+					onHide={remove}
 					initialValues={
 						{
 							// Details tab
@@ -86,7 +89,7 @@ const RedirectionHostModal = EasyModal.create(({ id, visible, remove }: Props) =
 					}
 					onSubmit={onSubmit}
 				>
-					{() => (
+					{({ onHide }) => (
 						<Form>
 							<Modal.Header closeButton>
 								<Modal.Title>
@@ -326,7 +329,7 @@ const RedirectionHostModal = EasyModal.create(({ id, visible, remove }: Props) =
 								</div>
 							</Modal.Body>
 							<Modal.Footer>
-								<Button data-bs-dismiss="modal" onClick={remove} disabled={isSubmitting}>
+								<Button data-bs-dismiss="modal" onClick={onHide} disabled={isSubmitting}>
 									<T id="cancel" />
 								</Button>
 								<Button
@@ -342,9 +345,9 @@ const RedirectionHostModal = EasyModal.create(({ id, visible, remove }: Props) =
 							</Modal.Footer>
 						</Form>
 					)}
-				</Formik>
+				</FormModal>
 			)}
-		</Modal>
+		</>
 	);
 });
 

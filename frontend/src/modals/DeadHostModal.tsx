@@ -1,6 +1,7 @@
 import { IconSettings } from "@tabler/icons-react";
 import EasyModal, { type InnerModalProps } from "ez-modal-react";
-import { Form, Formik } from "formik";
+import { Form } from "formik";
+import { FormModal } from "src/components/Form";
 import { type ReactNode, useState } from "react";
 import { Alert } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
@@ -53,7 +54,7 @@ const DeadHostModal = EasyModal.create(({ id, visible, remove }: Props) => {
 	};
 
 	return (
-		<Modal show={visible} onHide={remove}>
+		<>
 			{!isLoading && error && (
 				<Alert variant="danger" className="m-3">
 					{error?.message || "Unknown error"}
@@ -61,7 +62,9 @@ const DeadHostModal = EasyModal.create(({ id, visible, remove }: Props) => {
 			)}
 			{isLoading && <Loading noLogo />}
 			{!isLoading && data && (
-				<Formik
+				<FormModal
+					show={visible}
+					onHide={remove}
 					initialValues={
 						{
 							domainNames: data?.domainNames,
@@ -76,7 +79,7 @@ const DeadHostModal = EasyModal.create(({ id, visible, remove }: Props) => {
 					}
 					onSubmit={onSubmit}
 				>
-					{() => (
+					{({ onHide }) => (
 						<Form>
 							<Modal.Header closeButton>
 								<Modal.Title>
@@ -149,7 +152,7 @@ const DeadHostModal = EasyModal.create(({ id, visible, remove }: Props) => {
 								</div>
 							</Modal.Body>
 							<Modal.Footer>
-								<Button data-bs-dismiss="modal" onClick={remove} disabled={isSubmitting}>
+								<Button data-bs-dismiss="modal" onClick={onHide} disabled={isSubmitting}>
 									<T id="cancel" />
 								</Button>
 								<Button
@@ -165,9 +168,9 @@ const DeadHostModal = EasyModal.create(({ id, visible, remove }: Props) => {
 							</Modal.Footer>
 						</Form>
 					)}
-				</Formik>
+				</FormModal>
 			)}
-		</Modal>
+		</>
 	);
 });
 

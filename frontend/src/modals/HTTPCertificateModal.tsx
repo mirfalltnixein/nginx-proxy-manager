@@ -1,7 +1,8 @@
 import { IconAlertTriangle } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import EasyModal, { type InnerModalProps } from "ez-modal-react";
-import { Form, Formik, Field } from "formik";
+import { Field, Form } from "formik";
+import { FormModal } from "src/components/Form";
 import { type ReactNode, useState } from "react";
 import { Alert } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
@@ -109,8 +110,10 @@ const HTTPCertificateModal = EasyModal.create(({ visible, remove }: InnerModalPr
 	};
 
 	return (
-		<Modal show={visible} onHide={remove}>
-			<Formik
+		<>
+			<FormModal
+				show={visible}
+				onHide={remove}
 				initialValues={
 					{
 						domainNames: [],
@@ -122,7 +125,7 @@ const HTTPCertificateModal = EasyModal.create(({ visible, remove }: InnerModalPr
 				}
 				onSubmit={onSubmit}
 			>
-				{() => (
+				{({ onHide }) => (
 					<Form>
 						<Modal.Header closeButton>
 							<Modal.Title>
@@ -177,7 +180,7 @@ const HTTPCertificateModal = EasyModal.create(({ visible, remove }: InnerModalPr
 							</div>
 						</Modal.Body>
 						<Modal.Footer>
-							<Button data-bs-dismiss="modal" onClick={remove} disabled={isSubmitting || isTesting}>
+							<Button data-bs-dismiss="modal" onClick={onHide} disabled={isSubmitting || isTesting}>
 								<T id="cancel" />
 							</Button>
 							<div className="ms-auto">
@@ -206,8 +209,8 @@ const HTTPCertificateModal = EasyModal.create(({ visible, remove }: InnerModalPr
 						</Modal.Footer>
 					</Form>
 				)}
-			</Formik>
-		</Modal>
+			</FormModal>
+		</>
 	);
 });
 
