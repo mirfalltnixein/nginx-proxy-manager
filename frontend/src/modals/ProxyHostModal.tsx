@@ -46,6 +46,7 @@ const ProxyHostModal = EasyModal.create(({ id, visible, remove }: Props) => {
 			id: id === "new" ? undefined : id,
 			...values,
 		};
+		payload.locations = (values.locations || []).filter((location: any) => location.path?.trim() !== "");
 
 		setProxyHost(payload, {
 			onError: (err: any) => setErrorMsg(<T id={err.message} />),

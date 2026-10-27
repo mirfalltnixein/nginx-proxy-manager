@@ -26,13 +26,16 @@ const AccessListModal = EasyModal.create(({ id, visible, remove }: Props) => {
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const validate = (values: any): string | null => {
+		const items = (values.items || []).filter((i: AccessListItem) => i.username?.trim() !== "");
+		const clients = (values.clients || []).filter((i: AccessListClient) => i.address?.trim() !== "");
+
 		// either Auths or Clients must be defined
-		if (values.items?.length === 0 && values.clients?.length === 0) {
+		if (items.length === 0 && clients.length === 0) {
 			return intl.formatMessage({ id: "error.access.at-least-one" });
 		}
 
 		// ensure the items don't contain the same username twice
-		const usernames = values.items.map((i: any) => i.username);
+		const usernames = items.map((i: AccessListItem) => i.username);
 		const uniqueUsernames = Array.from(new Set(usernames));
 		if (usernames.length !== uniqueUsernames.length) {
 			return intl.formatMessage({ id: "error.access.duplicate-usernames" });
@@ -59,10 +62,12 @@ const AccessListModal = EasyModal.create(({ id, visible, remove }: Props) => {
 		};
 
 		// Filter out "items" to only use the "username" and "password" fields
-		payload.items = (values.items || []).map((i: AccessListItem) => ({
-			username: i.username,
-			password: i.password,
-		}));
+		payload.items = (values.items || [])
+			.filter((i: AccessListItem) => i.username?.trim() !== "")
+			.map((i: AccessListItem) => ({
+				username: i.username,
+				password: i.password,
+			}));
 
 		// Filter out "clients" to only use the "directive" and "address" fields
 		payload.clients = (values.clients || []).map((i: AccessListClient) => ({
