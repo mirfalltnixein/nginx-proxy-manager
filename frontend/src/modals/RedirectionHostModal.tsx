@@ -2,7 +2,6 @@ import { IconSettings } from "@tabler/icons-react";
 import cn from "classnames";
 import EasyModal, { type InnerModalProps } from "ez-modal-react";
 import { Field, Form } from "formik";
-import { FormModal } from "src/components/Form";
 import { type ReactNode, useState } from "react";
 import { Alert } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
@@ -14,6 +13,7 @@ import {
 	SSLCertificateField,
 	SSLOptionsFields,
 } from "src/components";
+import { FormModal } from "src/components/Form";
 import { useRedirectionHost, useSetRedirectionHost } from "src/hooks";
 import { T } from "src/locale";
 import { validateString } from "src/modules/Validations";
@@ -57,16 +57,21 @@ const RedirectionHostModal = EasyModal.create(({ id, visible, remove }: Props) =
 
 	return (
 		<>
-			{!isLoading && error && (
-				<Alert variant="danger" className="m-3">
-					{error?.message || "Unknown error"}
-				</Alert>
+			{(isLoading || (error && !data)) && (
+				<Modal show={visible} onHide={remove}>
+					{!isLoading && error && (
+						<Alert variant="danger" className="m-3">
+							{error?.message || "Unknown error"}
+						</Alert>
+					)}
+					{isLoading && <Loading noLogo />}
+				</Modal>
 			)}
-			{isLoading && <Loading noLogo />}
 			{!isLoading && data && (
 				<FormModal
 					show={visible}
 					onHide={remove}
+					preventHide={isSubmitting}
 					initialValues={
 						{
 							// Details tab

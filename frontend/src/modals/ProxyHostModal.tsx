@@ -2,7 +2,6 @@ import { IconSettings } from "@tabler/icons-react";
 import cn from "classnames";
 import EasyModal, { type InnerModalProps } from "ez-modal-react";
 import { Field, Form } from "formik";
-import { FormModal } from "src/components/Form";
 import { type ReactNode, useState } from "react";
 import { Alert } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
@@ -17,6 +16,7 @@ import {
 	SSLCertificateField,
 	SSLOptionsFields,
 } from "src/components";
+import { FormModal } from "src/components/Form";
 import { useProxyHost, useSetProxyHost, useUser } from "src/hooks";
 import { T } from "src/locale";
 import { MANAGE, PROXY_HOSTS } from "src/modules/Permissions";
@@ -62,16 +62,21 @@ const ProxyHostModal = EasyModal.create(({ id, visible, remove }: Props) => {
 
 	return (
 		<>
-			{!isLoading && (error || userError) && (
-				<Alert variant="danger" className="m-3">
-					{error?.message || userError?.message || "Unknown error"}
-				</Alert>
+			{(isLoading || userIsLoading || ((error || userError) && (!data || !currentUser))) && (
+				<Modal show={visible} onHide={remove}>
+					{!isLoading && (error || userError) && (
+						<Alert variant="danger" className="m-3">
+							{error?.message || userError?.message || "Unknown error"}
+						</Alert>
+					)}
+					{(isLoading || userIsLoading) && <Loading noLogo />}
+				</Modal>
 			)}
-			{isLoading || (userIsLoading && <Loading noLogo />)}
 			{!isLoading && !userIsLoading && data && currentUser && (
 				<FormModal
 					show={visible}
 					onHide={remove}
+					preventHide={isSubmitting}
 					initialValues={
 						{
 							// Details tab

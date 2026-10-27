@@ -4,9 +4,9 @@ import Modal from "react-bootstrap/Modal";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { FormModal } from "./FormModal";
 
-const renderModal = (onHide = vi.fn()) => {
+const renderModal = (onHide = vi.fn(), preventHide = false) => {
 	render(
-		<FormModal show onHide={onHide} initialValues={{ name: "" }} onSubmit={vi.fn()}>
+		<FormModal show onHide={onHide} preventHide={preventHide} initialValues={{ name: "" }} onSubmit={vi.fn()}>
 			{({ onHide: hide }) => (
 				<Form>
 					<Modal.Header closeButton />
@@ -66,5 +66,17 @@ describe("FormModal", () => {
 		fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
 
 		expect(onHide).toHaveBeenCalledOnce();
+	});
+
+	it("does not offer to discard changes while submission is in progress", () => {
+		const onHide = renderModal(vi.fn(), true);
+		const confirm = vi.spyOn(window, "confirm");
+		fireEvent.change(screen.getByLabelText("Name"), { target: { value: "example.com" } });
+
+		fireEvent.click(screen.getByRole("button", { name: "Close" }));
+
+		expect(confirm).not.toHaveBeenCalled();
+		expect(onHide).not.toHaveBeenCalled();
+		expect(screen.getByLabelText("Name")).toHaveValue("example.com");
 	});
 });

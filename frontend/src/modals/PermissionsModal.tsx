@@ -2,12 +2,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import cn from "classnames";
 import EasyModal, { type InnerModalProps } from "ez-modal-react";
 import { Field, Form } from "formik";
-import { FormModal } from "src/components/Form";
 import { type ReactNode, useState } from "react";
 import { Alert } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 import { setPermissions } from "src/api/backend";
 import { Button, Loading } from "src/components";
+import { FormModal } from "src/components/Form";
 import { useUser } from "src/hooks";
 import { T } from "src/locale";
 import styles from "./PermissionsModal.module.css";
@@ -135,16 +135,21 @@ const PermissionsModal = EasyModal.create(({ id, visible, remove }: Props) => {
 
 	return (
 		<>
-			{!isLoading && error && (
-				<Alert variant="danger" className="m-3">
-					{error?.message || "Unknown error"}
-				</Alert>
+			{(isLoading || (error && !data)) && (
+				<Modal show={visible} onHide={remove}>
+					{!isLoading && error && (
+						<Alert variant="danger" className="m-3">
+							{error?.message || "Unknown error"}
+						</Alert>
+					)}
+					{isLoading && <Loading noLogo />}
+				</Modal>
 			)}
-			{isLoading && <Loading noLogo />}
 			{!isLoading && data && (
 				<FormModal
 					show={visible}
 					onHide={remove}
+					preventHide={isSubmitting}
 					initialValues={
 						{
 							visibility: data.permissions?.visibility,
